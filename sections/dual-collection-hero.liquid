@@ -31,25 +31,25 @@
               {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
             </div>
           {% endif %}
-        </div>
 
-        {%- comment -%} Content Strip Below Image {%- endcomment -%}
-        <div class="dual-collection-hero__content">
-          {% if block.settings.subheading != blank %}
-            <div class="dual-collection-hero__subheading">
-              {{ block.settings.subheading | escape }}
-            </div>
-          {% endif %}
+          {%- comment -%} Content Overlay on Image {%- endcomment -%}
+          <div class="dual-collection-hero__content">
+            {% if block.settings.subheading != blank %}
+              <div class="dual-collection-hero__subheading">
+                {{ block.settings.subheading | escape }}
+              </div>
+            {% endif %}
 
-          <h2 class="dual-collection-hero__heading">
-            {{ block.settings.heading | escape | upcase }}
-          </h2>
+            <h2 class="dual-collection-hero__heading">
+              {{ block.settings.heading | escape | upcase }}
+            </h2>
 
-          {% if block.settings.link != blank %}
-            <a href="{{ block.settings.link }}" class="dual-collection-hero__cta">
-              {{ block.settings.cta_label | escape | upcase }}
-            </a>
-          {% endif %}
+            {% if block.settings.link != blank %}
+              <a href="{{ block.settings.link }}" class="dual-collection-hero__cta">
+                {{ block.settings.cta_label | escape | upcase }}
+              </a>
+            {% endif %}
+          </div>
         </div>
       </div>
     {% endfor %}
@@ -102,7 +102,7 @@
     position: relative;
     width: 100%;
     aspect-ratio: 2 / 3;
-    overflow: hidden;
+    overflow: visible;
     flex-shrink: 0;
   }
 
@@ -138,15 +138,20 @@
   }
 
   {%- comment -%}
-    Content strip below image — NOT overlaid
+    Content overlay positioned at bottom of image with negative offset
   {%- endcomment -%}
   .dual-collection-hero__content {
-    padding: var(--padding-md) var(--padding-lg);
+    position: absolute;
+    bottom: -15%;
+    left: 0;
+    right: 0;
+    padding: 1.5rem 1.5rem;
     background-color: rgba(var(--dual-hero-content-bg), var(--dual-hero-content-bg-alpha));
     color: rgba(var(--dual-hero-text-color), var(--dual-hero-text-alpha));
     display: flex;
     flex-direction: column;
-    gap: var(--gap-sm);
+    gap: 0.5rem;
+    z-index: 10;
   }
 
   {%- comment -%}
@@ -164,10 +169,11 @@
 
   {%- comment -%}
     Heading: responsive via clamp(), uses theme heading font
+    Larger than button but more reasonable size
   {%- endcomment -%}
   .dual-collection-hero__heading {
     font-family: var(--font-heading-family);
-    font-size: clamp(2rem, 10vw, 2.8rem);
+    font-size: clamp(1.5rem, 5vw, 2rem);
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -176,14 +182,14 @@
   }
 
   {%- comment -%}
-    CTA Button: transparent by default, inverts on hover
-    Sits in content area, NOT overlaid on image
+    CTA Button: underline style with hover animation
+    Sits overlaid on image
   {%- endcomment -%}
   .dual-collection-hero__cta {
     align-self: flex-start;
-    padding: 10px 20px;
-    border: 1px solid rgba(var(--dual-hero-button-border), var(--dual-hero-button-border-alpha));
-    border-radius: 2px;
+    padding: 0.5rem 0;
+    border: none;
+    border-bottom: 2px solid rgba(var(--dual-hero-button-text), var(--dual-hero-button-text-alpha));
     background-color: transparent;
     color: rgba(var(--dual-hero-button-text), var(--dual-hero-button-text-alpha));
     font-family: var(--font-body-family);
@@ -194,24 +200,40 @@
     text-decoration: none;
     cursor: pointer;
     display: inline-block;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     line-height: 1;
+    position: relative;
+  }
+
+  .dual-collection-hero__cta::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: rgba(var(--dual-hero-button-bg), var(--dual-hero-button-bg-alpha));
+    transition: width 0.4s ease;
   }
 
   .dual-collection-hero__cta:hover,
   .dual-collection-hero__cta:focus {
-    background-color: rgba(var(--dual-hero-button-bg), var(--dual-hero-button-bg-alpha));
-    color: rgba(var(--dual-hero-content-bg), var(--dual-hero-content-bg-alpha));
-    border-color: rgba(var(--dual-hero-button-bg), var(--dual-hero-button-bg-alpha));
+    color: rgba(var(--dual-hero-button-bg), var(--dual-hero-button-bg-alpha));
+  }
+
+  .dual-collection-hero__cta:hover::after,
+  .dual-collection-hero__cta:focus::after {
+    width: 100%;
   }
 
   @media screen and (max-width: 749px) {
     .dual-collection-hero__content {
-      padding: var(--padding-md);
+      padding: 1.25rem 1.25rem;
+      bottom: -15%;
     }
 
     .dual-collection-hero__heading {
-      font-size: clamp(1.5rem, 8vw, 2.2rem);
+      font-size: clamp(1.2rem, 7vw, 1.8rem);
     }
   }
 {% endstylesheet %}
