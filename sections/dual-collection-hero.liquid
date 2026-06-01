@@ -1,5 +1,7 @@
+{% unless template == 'index' %}{% break %}{% endunless %}
+
 {% liquid
-  # Validate that we have exactly 2 blocks maximum
+  # Ensure we only render up to two blocks
   assign block_count = section.blocks.size
   if block_count > 2
     assign block_count = 2
@@ -10,7 +12,7 @@
   <div class="dual-collection-hero__wrapper">
     {% for block in section.blocks limit: 2 %}
       <div class="dual-collection-hero__panel" {{ block.shopify_attributes }}>
-        {%- comment -%} Image Container {%- endcomment -%}
+        {%- comment -%} Image Container with overlay content {%- endcomment -%}
         <div class="dual-collection-hero__image-wrapper">
           {% if block.settings.image %}
             {%- assign img_url = block.settings.image | image_url: width: 1200 -%}
@@ -32,10 +34,7 @@
             </div>
           {% endif %}
 
-          {%- comment -%} Dark Gradient Overlay for Text Legibility {%- endcomment -%}
-          <div class="dual-collection-hero__gradient-overlay"></div>
-
-          {%- comment -%} Content Overlaid on Image {%- endcomment -%}
+          {%- comment -%} Overlay content anchored bottom-left (no separate white strip) {%- endcomment -%}
           <div class="dual-collection-hero__content">
             <h2 class="dual-collection-hero__heading">
               {{ block.settings.heading | escape | upcase }}
@@ -53,47 +52,41 @@
   </div>
 </div>
 
+{%- comment -%} Inline component stylesheet (scoped) {%- endcomment -%}
 {% stylesheet %}
   #dual-hero-{{ section.id }} {
-    --dual-hero-gap: {{ section.settings.gap_between_panels }}px;
+    --dual-hero-gap: {{ section.settings.gap_between_panels | default: 4 }}px;
   }
 
-  .dual-collection-hero {
-    width: 100%;
-    display: block;
-  }
-
-  .dual-collection-hero__wrapper {
+  #dual-hero-{{ section.id }} .dual-collection-hero__wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--dual-hero-gap);
     max-width: 100%;
+  }
 
-    @media screen and (max-width: 749px) {
+  @media screen and (max-width: 749px) {
+    #dual-hero-{{ section.id }} .dual-collection-hero__wrapper {
       grid-template-columns: 1fr;
       gap: 0;
     }
   }
 
-  .dual-collection-hero__panel {
+  #dual-hero-{{ section.id }} .dual-collection-hero__panel {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
 
-  {%- comment -%}
-    Image Container with 2:3 portrait aspect ratio
-    Position relative for absolute positioning of overlay content
-  {%- endcomment -%}
-  .dual-collection-hero__image-wrapper {
+  /* 2:3 aspect ratio image wrapper */
+  #dual-hero-{{ section.id }} .dual-collection-hero__image-wrapper {
     position: relative;
     width: 100%;
     aspect-ratio: 2 / 3;
     overflow: hidden;
-    flex-shrink: 0;
   }
 
-  .dual-collection-hero__image {
+  #dual-hero-{{ section.id }} .dual-collection-hero__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -102,7 +95,7 @@
     transition: transform 0.6s ease;
   }
 
-  .dual-collection-hero__image--placeholder {
+  #dual-hero-{{ section.id }} .dual-collection-hero__image--placeholder {
     width: 100%;
     height: 100%;
     background-color: var(--color-background-secondary);
@@ -111,34 +104,23 @@
     justify-content: center;
   }
 
-  .dual-collection-hero__image--placeholder svg {
-    width: 80px;
-    height: 80px;
-    opacity: 0.15;
-  }
-
-  {%- comment -%}
-    Hover effect: scale image
-  {%- endcomment -%}
-  .dual-collection-hero__panel:hover .dual-collection-hero__image {
+  /* Hover zoom */
+  #dual-hero-{{ section.id }} .dual-collection-hero__panel:hover .dual-collection-hero__image {
     transform: scale(1.03);
   }
 
-  {%- comment -%}
-    Gradient overlay for text legibility
-  {%- endcomment -%}
-  .dual-collection-hero__gradient-overlay {
+  /* Bottom gradient for legibility */
+  #dual-hero-{{ section.id }} .dual-collection-hero__image-wrapper::after {
+    content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, transparent 45%);
+    background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 45%);
     pointer-events: none;
     z-index: 1;
   }
 
-  {%- comment -%}
-    Content overlaid on image, positioned bottom-left
-  {%- endcomment -%}
-  .dual-collection-hero__content {
+  /* Overlay content anchored bottom-left */
+  #dual-hero-{{ section.id }} .dual-collection-hero__content {
     position: absolute;
     bottom: 28px;
     left: 28px;
@@ -148,10 +130,7 @@
     gap: 0;
   }
 
-  {%- comment -%}
-    Heading: white, responsive, overlay style
-  {%- endcomment -%}
-  .dual-collection-hero__heading {
+  #dual-hero-{{ section.id }} .dual-collection-hero__heading {
     font-family: var(--font-heading-family);
     font-size: clamp(2.2rem, 4vw, 3.5rem);
     font-weight: 700;
@@ -159,14 +138,10 @@
     text-transform: uppercase;
     line-height: 1;
     color: #ffffff;
-    margin: 0;
-    margin-bottom: 10px;
+    margin: 0 0 10px 0;
   }
 
-  {%- comment -%}
-    CTA Link: white text with underline, no box styling
-  {%- endcomment -%}
-  .dual-collection-hero__cta {
+  #dual-hero-{{ section.id }} .dual-collection-hero__cta {
     font-family: var(--font-body-family);
     font-size: 11px;
     font-weight: 500;
@@ -174,8 +149,7 @@
     text-transform: uppercase;
     color: #ffffff;
     text-decoration: none;
-    border: none;
-    border-bottom: 1.5px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 1.5px solid rgba(255,255,255,0.8);
     padding-bottom: 3px;
     background-color: transparent;
     cursor: pointer;
@@ -185,19 +159,19 @@
     width: fit-content;
   }
 
-  .dual-collection-hero__cta:hover,
-  .dual-collection-hero__cta:focus {
+  #dual-hero-{{ section.id }} .dual-collection-hero__cta:hover,
+  #dual-hero-{{ section.id }} .dual-collection-hero__cta:focus {
     opacity: 0.75;
   }
 
   @media screen and (max-width: 749px) {
-    .dual-collection-hero__heading {
+    #dual-hero-{{ section.id }} .dual-collection-hero__heading {
       font-size: clamp(2rem, 10vw, 2.5rem);
     }
 
-    .dual-collection-hero__content {
-      bottom: 28px;
-      left: 28px;
+    #dual-hero-{{ section.id }} .dual-collection-hero__content {
+      bottom: 18px;
+      left: 18px;
     }
   }
 {% endstylesheet %}
@@ -205,6 +179,7 @@
 {% schema %}
 {
   "name": "Dual Collection Hero",
+  "templates": ["index"],
   "settings": [
     {
       "type": "range",
@@ -221,7 +196,6 @@
     {
       "type": "collection",
       "name": "Collection Panel",
-      "limit": 2,
       "settings": [
         {
           "type": "image_picker",
