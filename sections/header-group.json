@@ -123,10 +123,38 @@
         "enable_transparent_header_collection": false,
         "collection_color_scheme": "default"
       }
+    },
+    "featured_categories_hero_qK9mP2": {
+      "type": "featured-categories-hero",
+      "blocks": {
+        "category_women": {
+          "type": "category",
+          "settings": {
+            "heading": "WOMEN",
+            "button_text": "SHOP NOW"
+          }
+        },
+        "category_men": {
+          "type": "category",
+          "settings": {
+            "heading": "MEN",
+            "button_text": "SHOP NOW"
+          }
+        }
+      },
+      "block_order": [
+        "category_women",
+        "category_men"
+      ],
+      "settings": {
+        "section_width": "full-width",
+        "color_scheme": "primary"
+      }
     }
   },
   "order": [
     "header_announcements_9jGBFp",
-    "header_section"
+    "header_section",
+    "featured_categories_hero_qK9mP2"
   ]
 }
