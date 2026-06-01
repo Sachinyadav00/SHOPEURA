@@ -64,7 +64,8 @@
           "settings": {
             "hide_logo_on_home_page": false,
             "padding-block-start": 0,
-            "padding-block-end": 0
+            "padding-block-end": 0,
+            "padding-inline-st            "padding-block-end": 0
           },
           "blocks": {}
         },
@@ -127,11 +128,32 @@
         "collection_color_scheme": "default"
       }
     },
-    
+    "dual_collection_hero_kP7xQ1": {
+      "type": "dual-collection-hero",
+      "blocks": {
+        "women_panel": {
+          "type": "collection",
+          "settings": {
+            "image": "shopify://shop_images/OUTFIT_3-3.webp",
+            "heading": "Women",
+            "cta_label": "SHOP NOW",
+            "link": "shopify://collections/women"
+          }
+        },
+        "men_panel": {
+          "type": "collection",
+          "settings": {
+            "image": "shopify://shop_images/PS0398_1.webp",
+            "heading": "Men",
+            "cta_label": "SHOP NOW",
+            "link": "shopify://collections/men"
+een_panels": 4
+      }
+    }
   },
   "order": [
     "header_announcements_9jGBFp",
     "header_section",
-    
+    "dual_collection_hero_kP7xQ1"
   ]
 }
