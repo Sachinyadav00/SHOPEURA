@@ -32,14 +32,11 @@
             </div>
           {% endif %}
 
-          {%- comment -%} Content Overlay on Image {%- endcomment -%}
-          <div class="dual-collection-hero__content">
-            {% if block.settings.subheading != blank %}
-              <div class="dual-collection-hero__subheading">
-                {{ block.settings.subheading | escape }}
-              </div>
-            {% endif %}
+          {%- comment -%} Dark Gradient Overlay for Text Legibility {%- endcomment -%}
+          <div class="dual-collection-hero__gradient-overlay"></div>
 
+          {%- comment -%} Content Overlaid on Image {%- endcomment -%}
+          <div class="dual-collection-hero__content">
             <h2 class="dual-collection-hero__heading">
               {{ block.settings.heading | escape | upcase }}
             </h2>
@@ -59,16 +56,6 @@
 {% stylesheet %}
   #dual-hero-{{ section.id }} {
     --dual-hero-gap: {{ section.settings.gap_between_panels }}px;
-    --dual-hero-content-bg: {{ section.settings.content_background.rgb }};
-    --dual-hero-content-bg-alpha: {{ section.settings.content_background.alpha }};
-    --dual-hero-text-color: {{ section.settings.text_color.rgb }};
-    --dual-hero-text-alpha: {{ section.settings.text_color.alpha }};
-    --dual-hero-button-bg: {{ section.settings.button_background.rgb }};
-    --dual-hero-button-bg-alpha: {{ section.settings.button_background.alpha }};
-    --dual-hero-button-text: {{ section.settings.button_text_color.rgb }};
-    --dual-hero-button-text-alpha: {{ section.settings.button_text_color.alpha }};
-    --dual-hero-button-border: {{ section.settings.button_border_color.rgb }};
-    --dual-hero-button-border-alpha: {{ section.settings.button_border_color.alpha }};
   }
 
   .dual-collection-hero {
@@ -96,13 +83,13 @@
 
   {%- comment -%}
     Image Container with 2:3 portrait aspect ratio
-    Uses aspect-ratio for strict sizing
+    Position relative for absolute positioning of overlay content
   {%- endcomment -%}
   .dual-collection-hero__image-wrapper {
     position: relative;
     width: 100%;
     aspect-ratio: 2 / 3;
-    overflow: visible;
+    overflow: hidden;
     flex-shrink: 0;
   }
 
@@ -131,109 +118,86 @@
   }
 
   {%- comment -%}
-    Hover effect: scale image only (not the content area)
+    Hover effect: scale image
   {%- endcomment -%}
   .dual-collection-hero__panel:hover .dual-collection-hero__image {
     transform: scale(1.03);
   }
 
   {%- comment -%}
-    Content overlay positioned at bottom of image with negative offset
+    Gradient overlay for text legibility
+  {%- endcomment -%}
+  .dual-collection-hero__gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, transparent 45%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  {%- comment -%}
+    Content overlaid on image, positioned bottom-left
   {%- endcomment -%}
   .dual-collection-hero__content {
     position: absolute;
-    bottom: -15%;
-    left: 0;
-    right: 0;
-    padding: 1.5rem 1.5rem;
-    background-color: rgba(var(--dual-hero-content-bg), var(--dual-hero-content-bg-alpha));
-    color: rgba(var(--dual-hero-text-color), var(--dual-hero-text-alpha));
+    bottom: 28px;
+    left: 28px;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    z-index: 10;
+    gap: 0;
   }
 
   {%- comment -%}
-    Optional subheading styling
-  {%- endcomment -%}
-  .dual-collection-hero__subheading {
-    font-family: var(--font-body-family);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    opacity: 0.65;
-    line-height: 1;
-  }
-
-  {%- comment -%}
-    Heading: responsive via clamp(), uses theme heading font
-    Larger than button but more reasonable size
+    Heading: white, responsive, overlay style
   {%- endcomment -%}
   .dual-collection-hero__heading {
     font-family: var(--font-heading-family);
-    font-size: clamp(1.5rem, 5vw, 2rem);
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    line-height: 1.1;
+    line-height: 1;
+    color: #ffffff;
     margin: 0;
+    margin-bottom: 10px;
   }
 
   {%- comment -%}
-    CTA Button: underline style with hover animation
-    Sits overlaid on image
+    CTA Link: white text with underline, no box styling
   {%- endcomment -%}
   .dual-collection-hero__cta {
-    align-self: flex-start;
-    padding: 0.5rem 0;
-    border: none;
-    border-bottom: 2px solid rgba(var(--dual-hero-button-text), var(--dual-hero-button-text-alpha));
-    background-color: transparent;
-    color: rgba(var(--dual-hero-button-text), var(--dual-hero-button-text-alpha));
     font-family: var(--font-body-family);
     font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+    font-weight: 500;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
+    color: #ffffff;
     text-decoration: none;
+    border: none;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.8);
+    padding-bottom: 3px;
+    background-color: transparent;
     cursor: pointer;
     display: inline-block;
-    transition: all 0.4s ease;
+    transition: opacity 0.2s ease;
     line-height: 1;
-    position: relative;
-  }
-
-  .dual-collection-hero__cta::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: rgba(var(--dual-hero-button-bg), var(--dual-hero-button-bg-alpha));
-    transition: width 0.4s ease;
+    width: fit-content;
   }
 
   .dual-collection-hero__cta:hover,
   .dual-collection-hero__cta:focus {
-    color: rgba(var(--dual-hero-button-bg), var(--dual-hero-button-bg-alpha));
-  }
-
-  .dual-collection-hero__cta:hover::after,
-  .dual-collection-hero__cta:focus::after {
-    width: 100%;
+    opacity: 0.75;
   }
 
   @media screen and (max-width: 749px) {
-    .dual-collection-hero__content {
-      padding: 1.25rem 1.25rem;
-      bottom: -15%;
+    .dual-collection-hero__heading {
+      font-size: clamp(2rem, 10vw, 2.5rem);
     }
 
-    .dual-collection-hero__heading {
-      font-size: clamp(1.2rem, 7vw, 1.8rem);
+    .dual-collection-hero__content {
+      bottom: 28px;
+      left: 28px;
     }
   }
 {% endstylesheet %}
@@ -250,37 +214,7 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "default": 0
-    },
-    {
-      "type": "color",
-      "id": "content_background",
-      "label": "Content Area Background",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Text Color",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "button_background",
-      "label": "Button Background (On Hover)",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "button_text_color",
-      "label": "Button Text Color",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "button_border_color",
-      "label": "Button Border Color",
-      "default": "#000000"
+      "default": 4
     }
   ],
   "blocks": [
@@ -300,12 +234,6 @@
           "label": "Heading",
           "placeholder": "e.g., Women",
           "default": "Women"
-        },
-        {
-          "type": "text",
-          "id": "subheading",
-          "label": "Subheading (Optional)",
-          "placeholder": "e.g., New Collection"
         },
         {
           "type": "text",
@@ -329,16 +257,14 @@
         {
           "type": "collection",
           "settings": {
-            "heading": "Women",
-            "subheading": "",
+            "heading": "WOMEN",
             "cta_label": "SHOP NOW"
           }
         },
         {
           "type": "collection",
           "settings": {
-            "heading": "Men",
-            "subheading": "",
+            "heading": "MEN",
             "cta_label": "SHOP NOW"
           }
         }
