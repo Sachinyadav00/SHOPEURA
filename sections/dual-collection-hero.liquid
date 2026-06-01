@@ -1,0 +1,327 @@
+{% liquid
+  # Validate that we have exactly 2 blocks maximum
+  assign block_count = section.blocks.size
+  if block_count > 2
+    assign block_count = 2
+  endif
+%}
+
+<div id="dual-hero-{{ section.id }}" class="dual-collection-hero">
+  <div class="dual-collection-hero__wrapper">
+    {% for block in section.blocks limit: 2 %}
+      <div class="dual-collection-hero__panel" {{ block.shopify_attributes }}>
+        {%- comment -%} Image Container {%- endcomment -%}
+        <div class="dual-collection-hero__image-wrapper">
+          {% if block.settings.image %}
+            {%- assign img_url = block.settings.image | image_url: width: 1200 -%}
+            <img
+              class="dual-collection-hero__image"
+              src="{{ img_url }}"
+              alt="{{ block.settings.heading | escape }}"
+              srcset="
+                {{ block.settings.image | image_url: width: 600 }} 600w,
+                {{ block.settings.image | image_url: width: 900 }} 900w,
+                {{ block.settings.image | image_url: width: 1200 }} 1200w
+              "
+              sizes="(min-width: 750px) 50vw, 100vw"
+              loading="lazy"
+            />
+          {% else %}
+            <div class="dual-collection-hero__image dual-collection-hero__image--placeholder">
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {% endif %}
+        </div>
+
+        {%- comment -%} Content Strip Below Image {%- endcomment -%}
+        <div class="dual-collection-hero__content">
+          {% if block.settings.subheading != blank %}
+            <div class="dual-collection-hero__subheading">
+              {{ block.settings.subheading | escape }}
+            </div>
+          {% endif %}
+
+          <h2 class="dual-collection-hero__heading">
+            {{ block.settings.heading | escape | upcase }}
+          </h2>
+
+          {% if block.settings.link != blank %}
+            <a href="{{ block.settings.link }}" class="dual-collection-hero__cta">
+              {{ block.settings.cta_label | escape | upcase }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% stylesheet %}
+  #dual-hero-{{ section.id }} {
+    --dual-hero-gap: {{ section.settings.gap_between_panels }}px;
+    --dual-hero-content-bg: {{ section.settings.content_background.rgb }};
+    --dual-hero-content-bg-alpha: {{ section.settings.content_background.alpha }};
+    --dual-hero-text-color: {{ section.settings.text_color.rgb }};
+    --dual-hero-text-alpha: {{ section.settings.text_color.alpha }};
+    --dual-hero-button-bg: {{ section.settings.button_background.rgb }};
+    --dual-hero-button-bg-alpha: {{ section.settings.button_background.alpha }};
+    --dual-hero-button-text: {{ section.settings.button_text_color.rgb }};
+    --dual-hero-button-text-alpha: {{ section.settings.button_text_color.alpha }};
+    --dual-hero-button-border: {{ section.settings.button_border_color.rgb }};
+    --dual-hero-button-border-alpha: {{ section.settings.button_border_color.alpha }};
+  }
+
+  .dual-collection-hero {
+    width: 100%;
+    display: block;
+  }
+
+  .dual-collection-hero__wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--dual-hero-gap);
+    max-width: 100%;
+
+    @media screen and (max-width: 749px) {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  .dual-collection-hero__panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  {%- comment -%}
+    Image Container with 2:3 portrait aspect ratio
+    Uses aspect-ratio for strict sizing
+  {%- endcomment -%}
+  .dual-collection-hero__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .dual-collection-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+
+  .dual-collection-hero__image--placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-background-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dual-collection-hero__image--placeholder svg {
+    width: 80px;
+    height: 80px;
+    opacity: 0.15;
+  }
+
+  {%- comment -%}
+    Hover effect: scale image only (not the content area)
+  {%- endcomment -%}
+  .dual-collection-hero__panel:hover .dual-collection-hero__image {
+    transform: scale(1.03);
+  }
+
+  {%- comment -%}
+    Content strip below image — NOT overlaid
+  {%- endcomment -%}
+  .dual-collection-hero__content {
+    padding: var(--padding-md) var(--padding-lg);
+    background-color: rgba(var(--dual-hero-content-bg), var(--dual-hero-content-bg-alpha));
+    color: rgba(var(--dual-hero-text-color), var(--dual-hero-text-alpha));
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+  }
+
+  {%- comment -%}
+    Optional subheading styling
+  {%- endcomment -%}
+  .dual-collection-hero__subheading {
+    font-family: var(--font-body-family);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.65;
+    line-height: 1;
+  }
+
+  {%- comment -%}
+    Heading: responsive via clamp(), uses theme heading font
+  {%- endcomment -%}
+  .dual-collection-hero__heading {
+    font-family: var(--font-heading-family);
+    font-size: clamp(2rem, 10vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  {%- comment -%}
+    CTA Button: transparent by default, inverts on hover
+    Sits in content area, NOT overlaid on image
+  {%- endcomment -%}
+  .dual-collection-hero__cta {
+    align-self: flex-start;
+    padding: 10px 20px;
+    border: 1px solid rgba(var(--dual-hero-button-border), var(--dual-hero-button-border-alpha));
+    border-radius: 2px;
+    background-color: transparent;
+    color: rgba(var(--dual-hero-button-text), var(--dual-hero-button-text-alpha));
+    font-family: var(--font-body-family);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    transition: all 0.3s ease;
+    line-height: 1;
+  }
+
+  .dual-collection-hero__cta:hover,
+  .dual-collection-hero__cta:focus {
+    background-color: rgba(var(--dual-hero-button-bg), var(--dual-hero-button-bg-alpha));
+    color: rgba(var(--dual-hero-content-bg), var(--dual-hero-content-bg-alpha));
+    border-color: rgba(var(--dual-hero-button-bg), var(--dual-hero-button-bg-alpha));
+  }
+
+  @media screen and (max-width: 749px) {
+    .dual-collection-hero__content {
+      padding: var(--padding-md);
+    }
+
+    .dual-collection-hero__heading {
+      font-size: clamp(1.5rem, 8vw, 2.2rem);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dual Collection Hero",
+  "settings": [
+    {
+      "type": "range",
+      "id": "gap_between_panels",
+      "label": "Gap Between Panels (Desktop)",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "content_background",
+      "label": "Content Area Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button Background (On Hover)",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#000000"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection Panel",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "placeholder": "e.g., Women",
+          "default": "Women"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading (Optional)",
+          "placeholder": "e.g., New Collection"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "Button Label",
+          "placeholder": "e.g., Shop Now",
+          "default": "SHOP NOW"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dual Collection Hero",
+      "blocks": [
+        {
+          "type": "collection",
+          "settings": {
+            "heading": "Women",
+            "subheading": "",
+            "cta_label": "SHOP NOW"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "heading": "Men",
+            "subheading": "",
+            "cta_label": "SHOP NOW"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

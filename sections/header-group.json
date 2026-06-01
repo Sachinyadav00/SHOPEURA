@@ -124,37 +124,45 @@
         "collection_color_scheme": "default"
       }
     },
-    "featured_categories_hero_qK9mP2": {
-      "type": "featured-categories-hero",
+    "dual_collection_hero_kP7xQ1": {
+      "type": "dual-collection-hero",
       "blocks": {
-        "category_women": {
-          "type": "category",
+        "women_panel": {
+          "type": "collection",
           "settings": {
-            "heading": "WOMEN",
-            "button_text": "SHOP NOW"
+            "heading": "Women",
+            "subheading": "",
+            "cta_label": "SHOP NOW",
+            "link": ""
           }
         },
-        "category_men": {
-          "type": "category",
+        "men_panel": {
+          "type": "collection",
           "settings": {
-            "heading": "MEN",
-            "button_text": "SHOP NOW"
+            "heading": "Men",
+            "subheading": "",
+            "cta_label": "SHOP NOW",
+            "link": ""
           }
         }
       },
       "block_order": [
-        "category_women",
-        "category_men"
+        "women_panel",
+        "men_panel"
       ],
       "settings": {
-        "section_width": "full-width",
-        "color_scheme": "primary"
+        "gap_between_panels": 0,
+        "content_background": "#ffffff",
+        "text_color": "#000000",
+        "button_background": "#000000",
+        "button_text_color": "#ffffff",
+        "button_border_color": "#000000"
       }
     }
   },
   "order": [
     "header_announcements_9jGBFp",
     "header_section",
-    "featured_categories_hero_qK9mP2"
+    "dual_collection_hero_kP7xQ1"
   ]
 }
